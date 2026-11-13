@@ -5,10 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ZILL Prototype</title>
 <meta name="description" content="ZILL: rules-based coordination prototype that sends a group needing rest to a station that has room, suits its access needs, is on an approved route and has confirmed. Synthetic data only.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ZILL prototype">
+<meta property="og:title" content="ZILL &#x638;&#x644; &middot; working prototype">
+<meta property="og:description" content="Sends a tired group only to a Hajj cooling station that has room, suits their needs, is on an approved route and has confirmed. MEDATHON 2026 &middot; Team ZILL &middot; synthetic data.">
+<meta property="og:url" content="https://mohammedhazem-design.github.io/ZILL/">
+<meta property="og:image" content="https://mohammedhazem-design.github.io/ZILL/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ZILL prototype: coordinator phone showing why station S3 was chosen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#061D22"><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/zill.css?v=5">
+<link rel="stylesheet" href="css/zill.css?v=7">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23061D22'/%3E%3Cpath d='M10 38 Q32 8 54 38' fill='none' stroke='%2386E0D0' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='46' r='6' fill='%2300E4FF'/%3E%3C/svg%3E">
 </head>
 <body data-mode="intro" data-layout="all">
@@ -18,24 +28,27 @@
   <button class="brand" data-act="mode" data-v="intro" aria-label="ZILL home"><span class="logo-mark" aria-hidden="true"></span><span class="wm">ZILL</span> <span class="ar" lang="ar" dir="rtl">&#x638;&#x644;</span></button>
   <nav class="nav" aria-label="Sections">
     <button data-act="mode" data-v="intro">Overview</button>
+    <button data-act="mode" data-v="tour">Guided tour</button>
     <button data-act="mode" data-v="ops">Live demo</button>
     <button data-act="mode" data-v="lab">Scenario Lab <span class="badge">7</span></button>
     <button data-act="mode" data-v="evidence">Evidence</button>
   </nav>
-  <div class="clockbox" title="Simulated clock. Nothing here is real time.">
-    <button id="clockBtn" class="ic" data-act="clock" aria-label="Run simulated clock">&#9654;</button>
-    <div class="ctime"><span id="clock">14:05</span><small>simulated</small></div>
-    <select id="speed" aria-label="Clock speed"><option value="10">10&times;</option><option value="30" selected>30&times;</option><option value="60">60&times;</option><option value="120">120&times;</option></select>
-    <button class="ic sm" data-act="step" data-d="1" title="Advance 1 simulated minute">+1m</button>
-    <button class="ic sm" data-act="step" data-d="5" title="Advance 5 simulated minutes">+5m</button>
-  </div>
-  <div class="tools">
-    <button id="offBtn" class="tbtn" data-act="offline" aria-pressed="false" title="Simulate the coordinator phone losing connection">Phone offline</button>
-    <button class="tbtn" data-act="reset" title="Reload the synthetic demo area">Reset</button>
-    <span class="synpill" title="All stations, routes, groups and times are fictional">Synthetic data &middot; prototype</span>
-  </div>
+  <details class="presenter" id="presenter">
+    <summary title="Simulated clock, offline test and reset (for presenters)">&#9881; Presenter</summary>
+    <div class="pmenu">
+      <div class="clockbox" title="Simulated clock. Nothing here is real time.">
+        <button id="clockBtn" class="ic" data-act="clock" aria-label="Run simulated clock">&#9654;</button>
+        <div class="ctime"><span id="clock">14:05</span><small>simulated</small></div>
+        <select id="speed" aria-label="Clock speed"><option value="10">10&times;</option><option value="30" selected>30&times;</option><option value="60">60&times;</option><option value="120">120&times;</option></select>
+        <button class="ic sm" data-act="step" data-d="1" title="Advance 1 simulated minute">+1m</button>
+        <button class="ic sm" data-act="step" data-d="5" title="Advance 5 simulated minutes">+5m</button>
+      </div>
+      <div class="prow"><button id="offBtn" class="tbtn" data-act="offline" aria-pressed="false" title="Simulate the coordinator phone losing connection">Phone offline</button><button class="tbtn" data-act="reset" title="Reload the synthetic demo area">Reset demo</button></div>
+      <p class="phelp">Run the clock to see the timers: 3-minute answer window, no-shows after ETA + 15 min, and data going stale after 20 min.</p>
+    </div>
+  </details>
+  <span class="synpill" title="All stations, routes, groups and times are fictional">Synthetic data &middot; prototype</span>
 </header>
-
 <!-- ============ OVERVIEW ============ -->
 <section id="intro" class="intro" aria-labelledby="introTitle">
   <div class="hero" role="img" aria-label="Illustrative artwork of shaded rest stations along a lit path. Not a real site."></div>
@@ -45,7 +58,8 @@
     <p class="q">Which appropriate station can receive this group, <em>and has the receiving team confirmed?</em></p>
     <p class="lede">A narrow coordination add-on for authorised Hajj field teams. It sends a group that needs rest to a cooling or assistance station that has room for the <b>whole group</b>, suits its <b>access needs</b>, is on an <b>operator-approved route</b>, and has <b>confirmed</b> it will receive them.</p>
     <div class="cta">
-      <button class="btn big" data-act="mode" data-v="ops">&#9654; Open the live demo</button>
+      <button class="btn big" data-act="mode" data-v="tour">&#9654; Watch the 60-second demo</button>
+      <button class="btn big ghost" data-act="mode" data-v="ops">Open the full live demo</button>
       <button class="btn big ghost" data-act="mode" data-v="lab">Replay the 7 test scenarios</button>
       <button class="btn big ghost" data-act="mode" data-v="evidence">What is tested, what is not</button>
     </div>
@@ -79,6 +93,7 @@
 
 <main id="stage" class="stage">
   <aside id="lab" class="lab" aria-label="Scenario Lab"></aside>
+  <section id="tour" class="tour" aria-live="polite"><div id="tourCard" class="tourcard"></div><div id="tourEnd" class="tourend"></div></section>
   <div class="devices">
     <section class="dev phone-wrap" data-role="coord" aria-label="Coordinator phone">
       <div class="devcap"><span><b>Coordinator</b> &middot; phone</span><button class="lnk" data-act="open" data-v="coord" title="Open this screen in its own window; it stays in sync">Open on another screen &#8599;</button></div>
@@ -188,6 +203,6 @@
 
 <script src="js/engine.js?v=3"></script>
 <script src="js/scenarios.js?v=3"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=7"></script>
 </body>
 </html>

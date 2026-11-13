@@ -456,3 +456,74 @@ body[data-shot][data-kiosk="map"] .map-wrap{width:1100px}
 body[data-kiosk] .lab,body[data-kiosk] .caption{display:none!important}
 body[data-kiosk] .stage{grid-template-columns:minmax(0,1fr)!important}
 
+
+/* ---------- presenter menu (keeps the top bar calm) ---------- */
+.presenter{margin-left:auto;position:relative}
+.presenter summary{list-style:none;cursor:pointer;border:1px solid var(--line-d);border-radius:10px;padding:7px 12px;font-size:13px;font-weight:700;color:var(--mute-d);user-select:none}
+.presenter summary::-webkit-details-marker{display:none}
+.presenter[open] summary,.presenter summary:hover{color:var(--ivory);border-color:var(--mint)}
+.pmenu{position:absolute;right:0;top:44px;z-index:60;width:min(430px,calc(100vw - 32px));background:var(--mid2);border:1px solid var(--line-d);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 24px 60px -20px #000}
+.pmenu .clockbox{margin-left:0;justify-content:space-between}
+.prow{display:flex;gap:8px}.prow .tbtn{flex:1}
+.phelp{margin:0;font-size:12.5px;line-height:1.45;color:var(--mute-d)}
+body[data-mode="intro"] .presenter,body[data-mode="evidence"] .presenter,body[data-mode="tour"] .presenter{display:none}
+body[data-mode="intro"] .pmenu .clockbox,body[data-mode="evidence"] .pmenu .clockbox,body[data-mode="intro"] #offBtn,body[data-mode="evidence"] #offBtn{display:flex}
+.synpill{margin-left:auto}
+.presenter + .synpill{margin-left:0}
+
+/* ---------- guided tour ---------- */
+.tour{display:none}
+body[data-mode="tour"] .stage{display:grid;grid-template-columns:minmax(0,1fr);max-width:1180px;margin:0 auto}
+body[data-mode="tour"] .tour{display:block}
+body[data-mode="tour"] .lab,body[data-mode="tour"] .opsbar,body[data-mode="tour"] .devcap{display:none!important}
+body[data-mode="tour"] .devices{display:block}
+body[data-mode="tour"] .dev{display:none!important}
+body[data-mode="tour"] .dev.tourfocus{display:block!important;position:static;margin:0 auto;max-width:1100px}
+body[data-mode="tour"] .phone-wrap.tourfocus{max-width:400px}
+body[data-mode="tour"] .map-wrap .map{max-height:min(66vh,640px)}
+.tourcard{max-width:920px;margin:0 auto 20px;background:linear-gradient(160deg,rgba(11,65,72,.55),rgba(6,29,34,.92));border:1px solid rgba(0,228,255,.38);border-radius:22px;padding:20px 24px;box-shadow:0 30px 70px -40px rgba(0,228,255,.55)}
+.tourcard .tk{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+.tourcard .tk span{color:var(--amber);letter-spacing:.08em}
+.tourcard h2{margin:8px 0 6px;font-size:30px;line-height:1.15}
+.tourcard p{margin:0;font-size:17px;line-height:1.55;color:#d6e8e8}
+.tctl{display:flex;gap:10px;margin-top:16px}
+.tctl .btn{flex:1;padding:13px 12px;font-size:15px;border-radius:12px}
+.tctl .btn.go{background:var(--cyan);color:var(--mid);flex:1.4;animation:nudge 2.4s ease-in-out infinite}
+.tctl .btn.mid{background:var(--teal);color:var(--ivory)}
+.tctl .btn.alt{background:transparent;color:var(--ivory);box-shadow:inset 0 0 0 1.5px var(--line-d)}
+.tctl .btn.alt:disabled{opacity:.35;background:transparent;color:var(--ivory)}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 rgba(0,228,255,.0)}50%{box-shadow:0 0 0 6px rgba(0,228,255,.18)}}
+.tdots{display:flex;gap:7px;justify-content:center;margin-top:14px}
+.tdots button{width:9px;height:9px;border-radius:50%;border:0;padding:0;background:#2a5157;transition:all .25s}
+.tdots button.on{background:var(--cyan);width:26px;border-radius:6px}
+.tdots button.done{background:var(--mint)}
+.tourend{display:none}
+body[data-tour-end] .tourend{display:block;max-width:920px;margin:0 auto}
+.tebig{text-align:center;font-size:24px;color:#d6e8e8;margin:4px 0 16px}
+.tebig b{font-size:40px;color:var(--cyan);font-weight:900}.tebig span{margin:0 10px;color:var(--mute-d)}
+.telist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.telist li{display:grid;grid-template-columns:32px 1fr auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;background:rgba(8,38,44,.85);border:1px solid var(--line-d);border-radius:12px;padding:10px 14px}
+.telist li span{grid-row:1/3;width:30px;height:30px;border-radius:9px;background:var(--mid);display:grid;place-items:center;font-weight:800;color:var(--mint)}
+.telist li b{font-size:15.5px}.telist li i{font-style:normal;font-size:12.5px;color:var(--mute-d);grid-column:2}
+.telist li em{grid-row:1/3;grid-column:3;font-style:normal;font-size:12px;font-weight:900;letter-spacing:.06em;border-radius:99px;padding:4px 10px}
+.telist li em.ok{background:#5fd3b4;color:var(--mid)}.telist li em.bad{background:var(--red);color:#fff}
+.tecta{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 6px}
+.tecta .btn{flex:1;min-width:200px;padding:13px;font-size:15px;border-radius:12px;background:var(--cyan);color:var(--mid)}
+.tecta .btn.alt{background:transparent;color:var(--ivory);box-shadow:inset 0 0 0 1.5px var(--line-d)}
+@media (max-width:760px){
+  body[data-mode="tour"] .stage{padding:12px 12px 40px}
+  .tourcard{padding:16px 16px;border-radius:18px;margin-bottom:14px}
+  .tourcard h2{font-size:22px}.tourcard p{font-size:15.5px}
+  .tourcard .tk{flex-direction:column;gap:2px;font-size:11px}
+  .tctl .btn{padding:12px 6px;font-size:14px}
+  body[data-mode="tour"] .phone{width:100%;max-width:400px;height:70vh;min-height:520px;border-radius:36px;padding:9px}
+  body[data-mode="tour"] .phone .screen{border-radius:28px}
+  body[data-mode="tour"] .tablet{min-height:0;height:auto;padding:8px}
+  body[data-mode="tour"] .tablet .screen{height:auto}
+  .presenter summary{padding:6px 9px;font-size:12px}
+  .tebig{font-size:18px}.tebig b{font-size:30px}
+}
+
+/* phones: incoming requests first on the station tablet */
+@media (max-width:760px){.tgrid .tcol.wide{order:-1}}
+

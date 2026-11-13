@@ -42,6 +42,7 @@
     stationId: params.get("station") || "S2",
     focus: null, highlight: null, dismissed: {}, prev: {}, toasts: { coord: [], station: [] }, toastOn: true,
     lab: { idx: 0, step: -1, playing: false, playAll: false, results: {}, ctx: null, timer: null },
+    tour: { step: 0, timer: null },
   };
   function resetLive() {
     const a = E.demo_area(); S.eng = new E.Zill(a[0], a[1]); S.now = 5; S.dismissed = {}; S.prev = {};
@@ -459,6 +460,71 @@
       cap.classList.toggle("on", !!st && S.mode === "lab");
     }
   }
+  // ------------------------------------------------------------ guided tour (one screen at a time; drives the real engine)
+  const TOUR = [
+    { focus: "coord", top: true, t: "Meet the coordinator",
+      say: "A field coordinator has 30 tired pilgrims at point G, two of them using wheelchairs. They enter only a head count, a location and access needs. No names. The emergency instruction always comes first." },
+    { focus: "coord", options: true, t: "Five rules, no guesswork",
+      say: "ZILL checks five fixed rules. S1 is closest but full, S2 has stairs, S4's data is 35 minutes old, so none of them is offered. S3 fits everyone on a step-free route. Every rule is shown, ticked." },
+    { focus: "station", t: "The station is asked first",
+      say: "The coordinator requests S3. Thirty places are held at once, and S3's staff see the request with a 3-minute countdown to accept, decline or ask for a call." },
+    { focus: "coord", top: true, t: "Confirmed before anyone walks",
+      say: "Staff tap Accept. The coordinator is told immediately, and the group now counts against S3's space, so nobody else can be promised the same places." },
+    { focus: "map", t: "Only safe, approved routes",
+      say: "The group walks the approved step-free route. The stairs to S2 and the closed path to S5 are never suggested." },
+    { focus: "super", t: "One view for the supervisor",
+      say: "The supervisor sees every station: free places, groups on the way, stale data. Any manual decision needs a recorded reason and goes into an append-only log." },
+    { focus: "end", t: "Tested, not just designed",
+      say: "Seven scripted scenarios pass, and the browser engine matches the original Python engine character for character. All data here is synthetic; nothing is connected to a real system." },
+  ];
+  function tourApply(k) {
+    k = Math.max(0, Math.min(TOUR.length - 1, k));
+    S.tour.step = k;
+    const a = E.demo_area(); const z = new E.Zill(a[0], a[1]);
+    const g = new E.Group("G-30", 30, "G", true, ["cooling", "rest"]);
+    S.now = 5; S.stationId = "S3"; S.offline = false; S.offlineSnap = null; S.running = false; S.dismissed = {}; S.highlight = null;
+    S.coord = { size: 30, node: "G", stepFree: true, rest: true, water: false, wheel: false, selected: "S3", manual: false, id: "G-30" };
+    if (k >= 2) z.request(g, "S3", 5, 14);
+    if (k >= 3) { S.now = 6; z.respond("R1", "accept", 6); }
+    if (k >= 4) S.now = 11;
+    S.toastOn = false; S.eng = z; S.prev = {}; diffStates(); S.toasts = { coord: [], station: [] }; S.toastOn = true;
+    commit();
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+      const sc = $("#coord .scr"); if (!sc) return;
+      if (TOUR[k].options) {
+        const d = $("#coord .opt details"); if (d) d.open = true;
+        const h = $$("#coord .h").find((x) => /whole group/.test(x.textContent));
+        sc.scrollTop = h ? Math.max(0, h.offsetTop - sc.offsetTop - 8) : 0;
+      } else sc.scrollTop = 0;
+    }, 80);
+  }
+  function tourStop() { if (S.tour.timer) clearInterval(S.tour.timer); S.tour.timer = null; }
+  function tourPlay() {
+    if (S.tour.timer) { tourStop(); render(); return; }
+    if (S.tour.step >= TOUR.length - 1) tourApply(0);
+    S.tour.timer = setInterval(() => { if (S.tour.step >= TOUR.length - 1) { tourStop(); render(); } else tourApply(S.tour.step + 1); }, 7500);
+    render();
+  }
+  function renderTour() {
+    const el = $("#tourCard"); if (!el) return;
+    const k = S.tour.step, st = TOUR[k], last = k === TOUR.length - 1;
+    let h = '<div class="tk">Guided tour &middot; step ' + (k + 1) + " of " + TOUR.length + '<span>Synthetic data &middot; prototype</span></div><h2>' + st.t + "</h2><p>" + st.say + "</p>";
+    h += '<div class="tctl"><button class="btn alt" data-act="tour-prev"' + (k === 0 ? " disabled" : "") + '>&larr; Back</button>' +
+      '<button class="btn mid" data-act="tour-play">' + (S.tour.timer ? "&#10074;&#10074; Pause" : "&#9654; Play") + "</button>" +
+      '<button class="btn go" data-act="tour-next">' + (last ? "Explore the full demo &rarr;" : "Next &rarr;") + "</button></div>";
+    h += '<div class="tdots">' + TOUR.map((_, i) => '<button data-act="tour-go" data-i="' + i + '" aria-label="Step ' + (i + 1) + '" class="' + (i === k ? "on" : i < k ? "done" : "") + '"></button>').join("") + "</div>";
+    setHTML(el, h);
+    const end = $("#tourEnd");
+    if (end && st.focus === "end" && !end.dataset.done) {
+      const r = SC.runAll(), pass = r.filter((x) => x.pass).length, same = r.filter((x) => x.identical).length;
+      end.innerHTML = '<div class="tebig"><b>' + pass + "/7</b> scenarios pass<span>&middot;</span><b>" + same + "/7</b> identical to the Python engine</div>" +
+        '<ol class="telist">' + SC.SCENARIOS.map((s, i) => "<li><span>" + s.n + "</span><b>" + s.title + "</b><i>" + s.rule + '</i><em class="' + (r[i].pass ? "ok" : "bad") + '">' + (r[i].pass ? "PASS" : "FAIL") + "</em></li>").join("") + "</ol>" +
+        '<div class="tecta"><button class="btn" data-act="tour-explore">Explore the full live demo</button><button class="btn alt" data-act="mode" data-v="lab">Replay the 7 scenarios</button><button class="btn alt" data-act="mode" data-v="evidence">What is tested, what is not</button></div>';
+      end.dataset.done = 1;
+    }
+  }
+
   // ------------------------------------------------------------ evidence
   // engine/simulation_results.json (illustrative, synthetic demand, 300 runs)
   const SIM = [
@@ -489,13 +555,15 @@
     $$(".lay button").forEach((b) => b.classList.toggle("on", b.dataset.v === S.layout));
     document.body.dataset.mode = S.mode; document.body.dataset.layout = S.layout;
     if (KIOSK) document.body.dataset.kiosk = KIOSK;
-    $$(".dev").forEach((d) => d.classList.toggle("focus", S.mode === "lab" && d.dataset.role === S.focus));
+    $$(".dev").forEach((d) => { d.classList.toggle("focus", S.mode === "lab" && d.dataset.role === S.focus); d.classList.toggle("tourfocus", S.mode === "tour" && d.dataset.role === TOUR[S.tour.step].focus); });
+    if (S.mode === "tour" && TOUR[S.tour.step].focus === "end") document.body.dataset.tourEnd = "1"; else delete document.body.dataset.tourEnd;
   }
   function render() {
     if (!S.eng) return;
     diffStates();
     renderTop();
-    if (S.mode === "ops" || S.mode === "lab") { renderCoord(); renderStation(); renderSuper(); renderMapCard(); }
+    if (S.mode === "ops" || S.mode === "lab" || S.mode === "tour") { renderCoord(); renderStation(); renderSuper(); renderMapCard(); }
+    if (S.mode === "tour") renderTour();
     if (S.mode === "lab") renderLab(); else { const cap = $("#caption"); if (cap) cap.classList.remove("on"); }
     if (S.mode === "evidence") renderEvidence();
   }
@@ -510,6 +578,8 @@
 
   function setMode(v) {
     if (S.mode === "lab" && v !== "lab") labStop();
+    if (S.mode === "tour" && v !== "tour") { tourStop(); if (v === "ops") resetLive(); }
+    if (v === "tour") { labStop(); S.mode = "tour"; tourApply(0); return; }
     if (v === "lab" && S.lab.step < 0) { S.mode = "lab"; window.scrollTo(0, 0); labApply(S.lab.idx, 0, true); return; }
     S.mode = v; window.scrollTo(0, 0); render();
   }
@@ -521,7 +591,12 @@
     if (b.tagName === "SELECT") return;
     const a = b.dataset.act, z = S.eng, now = S.now;
     switch (a) {
-      case "mode": setMode(b.dataset.v); break;
+      case "mode": { const pm = $("#presenter"); if (pm) pm.open = false; setMode(b.dataset.v); break; }
+      case "tour-next": if (S.tour.step >= TOUR.length - 1) { tourStop(); setMode("ops"); } else { tourStop(); tourApply(S.tour.step + 1); } break;
+      case "tour-prev": tourStop(); tourApply(S.tour.step - 1); break;
+      case "tour-go": tourStop(); tourApply(+b.dataset.i); break;
+      case "tour-play": tourPlay(); break;
+      case "tour-explore": tourStop(); setMode("ops"); break;
       case "layout": S.layout = b.dataset.v; if (S.mode !== "ops") S.mode = "ops"; render(); break;
       case "clock": S.running = !S.running; lastT = performance.now(); if (S.mode === "lab") { labStop(); } render(); break;
       case "step": S.now += +b.dataset.d; commit(); break;
@@ -588,6 +663,10 @@
     if (ev.key === "Escape") $("#modal").classList.remove("on");
     if (ev.target.closest("input,textarea,select")) return;
     if (ev.key === "Enter" && ev.target.matches(".opt")) { ev.target.click(); return; }
+    if (S.mode === "tour") {
+      if (ev.key === "ArrowRight") { tourStop(); if (S.tour.step < TOUR.length - 1) tourApply(S.tour.step + 1); ev.preventDefault(); }
+      if (ev.key === "ArrowLeft") { tourStop(); tourApply(S.tour.step - 1); ev.preventDefault(); }
+    }
     if (S.mode === "lab") {
       if (ev.key === "ArrowRight") { labStop(); labNext(); render(); ev.preventDefault(); }
       if (ev.key === "ArrowLeft") { labStop(); labPrev(); render(); ev.preventDefault(); }
@@ -618,12 +697,15 @@
   }
   if (params.get("preset")) applyPreset(params.get("preset"));
   if (params.get("scenario")) { S.mode = "lab"; labApply(+params.get("scenario") - 1, Math.max(0, (+params.get("step") || 1) - 1), true); }
+  else if (params.get("mode") === "tour") { S.mode = "tour"; tourApply(+(params.get("step") || 1) - 1); }
   else if (params.get("mode")) S.mode = params.get("mode");
   if (params.get("runall")) labRunAll();
   if (params.get("layout")) S.layout = params.get("layout");
   if (params.get("station")) S.stationId = params.get("station");
   if (params.get("shot")) document.body.dataset.shot = "1";
   if (params.get("why") || params.get("scroll")) setTimeout(() => { const d = document.querySelector("#coord .opt details"); if (d && params.get("why")) d.open = true; const sc = document.querySelector("#coord .scr"); if (sc) sc.scrollTop = +(params.get("scroll") || 0); }, 400);
+  // phones (e.g. judges scanning the QR code) land straight in the guided tour
+  if (!KIOSK && !location.search && window.matchMedia && window.matchMedia("(max-width: 760px)").matches) { S.mode = "tour"; tourApply(0); }
   window.ZILL = { state: S, render: render, runAll: () => SC.runAll() };
   render();
 })();
