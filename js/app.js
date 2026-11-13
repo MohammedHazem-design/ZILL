@@ -25,6 +25,29 @@
   function phase(el) { const t = performance.now() / 1000; el.querySelectorAll('[data-ph]').forEach((n) => { n.style.animationDelay = '-' + (t % +n.dataset.ph).toFixed(3) + 's'; }); }
   // only touch the DOM when the markup actually changed
   function setHTML(el, html) { if (el._h === html) return false; el._h = html; el.innerHTML = html; phase(el); return true; }
+  function okPop(rid) {
+    if (!S.seenOk[rid]) { S.seenOk[rid] = 1; setTimeout(() => { S.seenOk[rid] = 2; render(); }, 1600); }
+    return S.seenOk[rid] === 1 ? " justok" : "";
+  }
+  const shownNum = {};
+  function countUp(el, key) {
+    if (!el || !el.firstChild || el.firstChild.nodeType !== 3) return;
+    const tn = el.firstChild, to = parseInt(tn.nodeValue, 10); if (isNaN(to)) return;
+    const from = shownNum[key]; shownNum[key] = to; if (from === undefined || from === to) return;
+    const t0 = performance.now(), dur = 450;
+    const step = (now) => { if (!tn.isConnected) return; const k = Math.min(1, (now - t0) / dur); tn.nodeValue = String(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+    tn.nodeValue = String(from); requestAnimationFrame(step);
+  }
+  const I18N = window.ZILL_I18N || null;
+  function applyLang() {
+    const ar = S.lang === "ar" && !!I18N;
+    $$("[data-i18n]").forEach((el) => { if (el.dataset.en === undefined) el.dataset.en = el.innerHTML; const v = ar ? I18N.ui[el.dataset.i18n] : el.dataset.en; if (v !== undefined && el.innerHTML !== v) el.innerHTML = v; });
+    $$(".intro-in, .nav, #tourCard, #tourEnd").forEach((el) => { if (ar) { el.setAttribute("dir", "rtl"); el.setAttribute("lang", "ar"); } else { el.removeAttribute("dir"); el.removeAttribute("lang"); } });
+    document.body.classList.toggle("lang-ar", ar);
+    const b = $("#langBtn"); if (b) { b.innerHTML = ar ? "English" : "&#x627;&#x644;&#x639;&#x631;&#x628;&#x64A;&#x629;"; b.setAttribute("lang", ar ? "en" : "ar"); }
+    const end = $("#tourEnd"); if (end) delete end.dataset.done;
+    const tc = $("#tourCard"); if (tc) tc._h = null;
+  }
   function fresh(age) {
     if (age <= E.FRESH_MIN) return { cls: "fresh", tag: "Live", txt: "updated " + wm(age) + " min ago" };
     if (age <= E.STALE_MIN) return { cls: "ageing", tag: "Ageing", txt: "updated " + wm(age) + " min ago" };
@@ -42,12 +65,12 @@
     stationId: params.get("station") || "S2",
     focus: null, highlight: null, dismissed: {}, prev: {}, toasts: { coord: [], station: [] }, toastOn: true,
     lab: { idx: 0, step: -1, playing: false, playAll: false, results: {}, ctx: null, timer: null },
-    tour: { step: 0, timer: null },
+    tour: { step: 0, timer: null }, seenOk: {}, lang: "en", lastRoute: "",
   };
   function resetLive() {
     const a = E.demo_area(); S.eng = new E.Zill(a[0], a[1]); S.now = 5; S.dismissed = {}; S.prev = {};
     S.coord = { size: 25, node: "G", stepFree: false, rest: false, water: false, wheel: false, selected: null, id: null };
-    S.offline = false; S.offlineSnap = null; S.highlight = null; S.focus = null; S.toasts = { coord: [], station: [] };
+    S.offline = false; S.offlineSnap = null; S.highlight = null; S.focus = null; S.toasts = { coord: [], station: [] }; S.seenOk = {};
   }
   resetLive();
 
@@ -118,6 +141,7 @@
       '<filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
     h += '<rect width="1100" height="720" rx="28" fill="#0a1f24"/><rect width="1100" height="720" rx="28" fill="url(#dots' + (mini ? "m" : "") + ')"/>';
     h += '<text x="32" y="' + (mini ? 60 : 44) + '" font-size="' + (mini ? 30 : 17) + '" fill="#7fb7bf" letter-spacing="2">SCHEMATIC &#183; FICTIONAL &#183; NOT A REAL HAJJ MAP</text>';
+    for (const e of z.edges) { const p = NODES[e.a], q = NODES[e.b]; h += '<line class="road" x1="' + p[0] + '" y1="' + p[1] + '" x2="' + q[0] + '" y2="' + q[1] + '"/>'; }
     for (const e of z.edges) {
       const p = NODES[e.a], q = NODES[e.b];
       let cls = "e-ok"; if (e.status === "closed") cls = "e-closed"; else if (e.status !== "approved") cls = "e-unv"; else if (!e.step_free) cls = "e-stairs";
@@ -156,7 +180,9 @@
       const pend = Object.values(z.requests).some((r) => r.station === s.id && r.state === "pending");
       if (pend) h += '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="44" fill="none" stroke="#F2B45A" stroke-width="3" stroke-dasharray="6 6" class="spin"' + ph(6) + '/>';
       h += '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="34" fill="' + (o.selected === s.id ? "#0B4148" : "#06161a") + '" stroke="' + ring + '" stroke-width="5"/>';
-      h += '<text x="' + xy[0] + '" y="' + (xy[1] + 8) + '" font-size="24" fill="#fff" text-anchor="middle" font-weight="700">' + s.id + '</text>';
+      if (mini) h += '<text x="' + xy[0] + '" y="' + (xy[1] + 8) + '" font-size="24" fill="#fff" text-anchor="middle" font-weight="700">' + s.id + '</text>';
+      else h += '<path d="M' + (xy[0] - 15) + ',' + (xy[1] - 6) + ' Q' + xy[0] + ',' + (xy[1] - 24) + ' ' + (xy[0] + 15) + ',' + (xy[1] - 6) + ' Z" fill="' + ring + '"/><line x1="' + xy[0] + '" y1="' + (xy[1] - 6) + '" x2="' + xy[0] + '" y2="' + (xy[1] + 3) + '" stroke="' + ring + '" stroke-width="2.5"/>' +
+        '<text x="' + xy[0] + '" y="' + (xy[1] + 23) + '" font-size="19" fill="#fff" text-anchor="middle" font-weight="800">' + s.id + '</text>';
       if (!mini) {
         const l = LBL[s.id];
         h += '<text x="' + (xy[0] + l[0]) + '" y="' + (xy[1] + l[1]) + '" font-size="18" fill="' + subc + '" text-anchor="' + l[2] + '" font-weight="700">' + sub + '</text>';
@@ -204,7 +230,7 @@
     for (const [rid, r] of reqs) {
       let cls = "rq", body = "";
       if (r.state === "pending") { cls += " amber"; body = '<b>Waiting for ' + r.station + ' to confirm</b><span class="cdown">' + cd(r.sent + E.REQUEST_TIMEOUT_MIN - now) + '</span><div class="small">' + r.size + ' places held while staff decide. Lapses automatically if unanswered.</div>'; }
-      else if (r.state === "accepted") { cls += " ok"; body = '<b>&#x2713; Confirmed by ' + r.station + ' staff</b><span class="cdown">ETA ' + clock(r.eta) + '</span><div class="small">Hold kept until ' + clock(r.eta + E.NO_SHOW_GRACE_MIN) + '. Not a guaranteed admission; never delay urgent help.</div>'; }
+      else if (r.state === "accepted") { cls += " ok" + okPop(rid); body = '<b>&#x2713; Confirmed by ' + r.station + ' staff</b><span class="cdown">ETA ' + clock(r.eta) + '</span><div class="small">Hold kept until ' + clock(r.eta + E.NO_SHOW_GRACE_MIN) + '. Not a guaranteed admission; never delay urgent help.</div>'; }
       else if (r.state === "arrived") { cls += " ok"; body = '<b>&#x2713; Arrived at ' + r.station + '</b>'; }
       else {
         cls += r.state === "station-closed" ? " bad" : " warn";
@@ -236,7 +262,7 @@
     if (res.excluded.length) h += '<div class="excl"><b>Not offered</b>' + res.excluded.map(([id, why]) => "<div><span>" + id + "</span> " + esc(why) + "</div>").join("") + "</div>";
     const canSend = sel && !S.offline && !res.manual;
     const o = res.feasible.find((x) => x.station === sel);
-    h += '<button class="btn main" data-act="c-send" ' + (canSend ? "" : "disabled") + '>' + (S.offline ? "Offline &mdash; use radio" : canSend ? "Request arrival at " + sel + " &middot; ETA ~" + o.walk_min + " min" : "No station to request") + "</button>";
+    h += '<button class="btn main' + (canSend ? ' cta-pulse" data-ph="2.4"' : '"') + ' data-act="c-send" ' + (canSend ? "" : "disabled") + '>' + (S.offline ? "Offline &mdash; use radio" : canSend ? "Request arrival at " + sel + " &middot; ETA ~" + o.walk_min + " min" : "No station to request") + "</button>";
     h += '<p class="fine">Suggestions come from fixed rules only (no AI). A confirmed place is not a guaranteed admission.</p>';
     h += "</div>";
     h += '<div class="toasts">' + S.toasts.coord.map((t) => '<div class="toast ' + t.kind + (Date.now() - t.at < 300 ? ' new' : '') + '">' + t.html + "</div>").join("") + "</div>";
@@ -277,7 +303,7 @@
       const left = r.sent + E.REQUEST_TIMEOUT_MIN - now;
       h += '<div class="req"><div class="t"><span>' + esc(r.group) + ' &middot; ' + r.size + ' people</span><span class="pill warn">Answer in ' + cd(left) + '</span></div>' +
         '<div class="s">ETA ' + clock(r.eta) + ' &middot; ' + (r.step_free ? "<b>needs step-free access</b>" : "no step-free need") + ' &middot; from ' + (LOCS[r.node] || r.node) + ' &middot; needs ' + r.needs.join(", ") + '</div>' +
-        '<div class="row3"><button class="btn" data-act="s-resp" data-rid="' + rid + '" data-v="accept">Accept</button><button class="btn alt" data-act="s-resp" data-rid="' + rid + '" data-v="declined">Decline</button><button class="btn alt" data-act="s-resp" data-rid="' + rid + '" data-v="coordinate">Call me</button></div></div>';
+        '<div class="row3"><button class="btn cta-pulse" data-ph="2.4" data-act="s-resp" data-rid="' + rid + '" data-v="accept">Accept</button><button class="btn alt" data-act="s-resp" data-rid="' + rid + '" data-v="declined">Decline</button><button class="btn alt" data-act="s-resp" data-rid="' + rid + '" data-v="coordinate">Call me</button></div></div>';
     }
     h += '<div class="h0">Incoming and recent</div><table class="tbl"><tr><th>Group</th><th>Size</th><th>ETA</th><th>Status</th><th></th></tr>';
     if (!accepted.length && !recent.length) h += '<tr><td colspan="5" class="empty">Nothing incoming.</td></tr>';
@@ -293,6 +319,7 @@
     h += '<div class="toasts t2">' + S.toasts.station.map((t) => '<div class="toast ' + t.kind + (Date.now() - t.at < 300 ? ' new' : '') + '">' + t.html + "</div>").join("") + "</div>";
     h += '<div class="synth">Prototype &middot; synthetic data</div>';
     setHTML(el, h);
+    countUp(el.querySelector(".bignum"), "big:" + s.id);
   }
   // ------------------------------------------------------------ supervisor
   function attention(z, now) {
@@ -354,6 +381,7 @@
     h += '<div class="card"><div class="h0">Overrides today</div>' + (z.overrides.length ? '<ul class="ovl">' + z.overrides.slice().reverse().map((o) => "<li><b>" + clock(o.now) + "</b> " + esc(o.ref) + ": " + esc(o.action) + "<br><i>Reason recorded: " + esc(o.reason) + "</i></li>").join("") + "</ul>" : '<div class="empty">No overrides yet.</div>') + "</div></div>";
     h += '<div class="card log"><div class="h0">Decision log &middot; append-only <button class="btn xs alt" data-act="sv-export">Export CSV</button></div><ol>' + z.log.slice().reverse().slice(0, 60).map((l) => '<li class="' + (String(l[2]).indexOf("OVERRIDE") === 0 ? "ov" : "") + '"><b>' + clock(l[0]) + "</b><span>" + esc(l[1]) + "</span>" + esc(l[2]) + "</li>").join("") + (z.log.length ? "" : '<li class="empty">No decisions yet.</li>') + "</ol></div>";
     setHTML(el, h);
+    $$(".kpi b", el).forEach((b, i) => countUp(b, "kpi" + i));
     refreshOverrideTargets(false);
   }
   // override form is static, so typing a reason is never interrupted by live re-renders
@@ -395,13 +423,15 @@
     const g = draftGroup(), z = S.eng, sel = S.coord.selected;
     let route = null; if (sel && z.st[sel]) { const w = z.walkPath(g.node, z.st[sel].node, g.needs_step_free); route = w && w.path; }
     setHTML(el, mapSVG({ z: z, now: S.now, route: route, group: g, selected: sel, highlight: S.highlight }));
+    const rk = route ? route.join("") : "";
+    if (rk !== S.lastRoute) { S.lastRoute = rk; const gl = el.querySelector(".e-route-glow"); if (gl) { gl.classList.remove("draw"); void gl.getBBox(); gl.classList.add("draw"); } }
   }
 
   // ------------------------------------------------------------ scenario lab
   function labApply(i, k, jump) {
     const c = SC.run(i, k);
     S.lab.idx = i; S.lab.step = k; S.lab.ctx = c;
-    if (jump) { S.toastOn = false; S.prev = {}; }
+    if (jump) { S.toastOn = false; S.prev = {}; S.seenOk = {}; }
     S.eng = c.z; S.now = c.now;
     if (c.draft) S.coord = Object.assign({ selected: null }, c.draft);
     if (c.selected) S.coord.selected = c.selected;
@@ -487,7 +517,7 @@
     if (k >= 2) z.request(g, "S3", 5, 14);
     if (k >= 3) { S.now = 6; z.respond("R1", "accept", 6); }
     if (k >= 4) S.now = 11;
-    S.toastOn = false; S.eng = z; S.prev = {}; diffStates(); S.toasts = { coord: [], station: [] }; S.toastOn = true;
+    S.toastOn = false; S.eng = z; S.prev = {}; S.seenOk = {}; diffStates(); S.toasts = { coord: [], station: [] }; S.toastOn = true;
     commit();
     window.scrollTo(0, 0);
     setTimeout(() => {
@@ -508,19 +538,23 @@
   }
   function renderTour() {
     const el = $("#tourCard"); if (!el) return;
+    const ar = S.lang === "ar" && !!I18N, T = ar ? I18N.tour : null;
     const k = S.tour.step, st = TOUR[k], last = k === TOUR.length - 1;
-    let h = '<div class="tk">Guided tour &middot; step ' + (k + 1) + " of " + TOUR.length + '<span>Synthetic data &middot; prototype</span></div><h2>' + st.t + "</h2><p>" + st.say + "</p>";
-    h += '<div class="tctl"><button class="btn alt" data-act="tour-prev"' + (k === 0 ? " disabled" : "") + '>&larr; Back</button>' +
-      '<button class="btn mid" data-act="tour-play">' + (S.tour.timer ? "&#10074;&#10074; Pause" : "&#9654; Play") + "</button>" +
-      '<button class="btn go" data-act="tour-next">' + (last ? "Explore the full demo &rarr;" : "Next &rarr;") + "</button></div>";
+    const title = ar ? T.steps[k][0] : st.t, say = ar ? T.steps[k][1] : st.say;
+    const lbl = ar ? T.step.replace("{k}", k + 1).replace("{n}", TOUR.length) : "Guided tour &middot; step " + (k + 1) + " of " + TOUR.length;
+    let h = '<div class="tk">' + lbl + "<span>" + (ar ? T.syn : "Synthetic data &middot; prototype") + "</span></div><h2>" + title + "</h2><p>" + say + "</p>";
+    h += '<div class="tctl"><button class="btn alt" data-act="tour-prev"' + (k === 0 ? " disabled" : "") + ">" + (ar ? T.back : "&larr; Back") + "</button>" +
+      '<button class="btn mid" data-act="tour-play">' + (S.tour.timer ? (ar ? T.pause : "&#10074;&#10074; Pause") : (ar ? T.play : "&#9654; Play")) + "</button>" +
+      '<button class="btn go" data-act="tour-next">' + (last ? (ar ? T.explore : "Explore the full demo &rarr;") : (ar ? T.next : "Next &rarr;")) + "</button></div>";
     h += '<div class="tdots">' + TOUR.map((_, i) => '<button data-act="tour-go" data-i="' + i + '" aria-label="Step ' + (i + 1) + '" class="' + (i === k ? "on" : i < k ? "done" : "") + '"></button>').join("") + "</div>";
     setHTML(el, h);
     const end = $("#tourEnd");
     if (end && st.focus === "end" && !end.dataset.done) {
       const r = SC.runAll(), pass = r.filter((x) => x.pass).length, same = r.filter((x) => x.identical).length;
-      end.innerHTML = '<div class="tebig"><b>' + pass + "/7</b> scenarios pass<span>&middot;</span><b>" + same + "/7</b> identical to the Python engine</div>" +
-        '<ol class="telist">' + SC.SCENARIOS.map((s, i) => "<li><span>" + s.n + "</span><b>" + s.title + "</b><i>" + s.rule + '</i><em class="' + (r[i].pass ? "ok" : "bad") + '">' + (r[i].pass ? "PASS" : "FAIL") + "</em></li>").join("") + "</ol>" +
-        '<div class="tecta"><button class="btn" data-act="tour-explore">Explore the full live demo</button><button class="btn alt" data-act="mode" data-v="lab">Replay the 7 scenarios</button><button class="btn alt" data-act="mode" data-v="evidence">What is tested, what is not</button></div>';
+      const nm = (s, i) => (ar ? T.scen[i] : [s.title, s.rule]);
+      end.innerHTML = '<div class="tebig">' + (ar ? T.big.replace("{p}", pass).replace("{s}", same) : "<b>" + pass + "/7</b> scenarios pass<span>&middot;</span><b>" + same + "/7</b> identical to the Python engine") + "</div>" +
+        '<ol class="telist">' + SC.SCENARIOS.map((s, i) => "<li><span>" + s.n + "</span><b>" + nm(s, i)[0] + "</b><i>" + nm(s, i)[1] + '</i><em class="' + (r[i].pass ? "ok" : "bad") + '">' + (r[i].pass ? (ar ? T.pass : "PASS") : (ar ? T.fail : "FAIL")) + "</em></li>").join("") + "</ol>" +
+        '<div class="tecta"><button class="btn" data-act="tour-explore">' + (ar ? T.cta[0] : "Explore the full live demo") + '</button><button class="btn alt" data-act="mode" data-v="lab">' + (ar ? T.cta[1] : "Replay the 7 scenarios") + '</button><button class="btn alt" data-act="mode" data-v="evidence">' + (ar ? T.cta[2] : "What is tested, what is not") + "</button></div>";
       end.dataset.done = 1;
     }
   }
@@ -596,6 +630,7 @@
       case "tour-prev": tourStop(); tourApply(S.tour.step - 1); break;
       case "tour-go": tourStop(); tourApply(+b.dataset.i); break;
       case "tour-play": tourPlay(); break;
+      case "lang": S.lang = S.lang === "ar" ? "en" : "ar"; try { localStorage.setItem("zill-lang", S.lang); } catch (e) { /* storage unavailable */ } applyLang(); render(); break;
       case "tour-explore": tourStop(); setMode("ops"); break;
       case "layout": S.layout = b.dataset.v; if (S.mode !== "ops") S.mode = "ops"; render(); break;
       case "clock": S.running = !S.running; lastT = performance.now(); if (S.mode === "lab") { labStop(); } render(); break;
@@ -704,6 +739,8 @@
   if (params.get("station")) S.stationId = params.get("station");
   if (params.get("shot")) document.body.dataset.shot = "1";
   if (params.get("why") || params.get("scroll")) setTimeout(() => { const d = document.querySelector("#coord .opt details"); if (d && params.get("why")) d.open = true; const sc = document.querySelector("#coord .scr"); if (sc) sc.scrollTop = +(params.get("scroll") || 0); }, 400);
+  try { S.lang = params.get("lang") === "ar" ? "ar" : params.get("lang") === "en" ? "en" : (localStorage.getItem("zill-lang") || "en"); } catch (e) { S.lang = params.get("lang") === "ar" ? "ar" : "en"; }
+  applyLang();
   // phones (e.g. judges scanning the QR code) land straight in the guided tour
   if (!KIOSK && !location.search && window.matchMedia && window.matchMedia("(max-width: 760px)").matches) { S.mode = "tour"; tourApply(0); }
   window.ZILL = { state: S, render: render, runAll: () => SC.runAll() };

@@ -17,8 +17,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#061D22"><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/zill.css?v=7">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@600;800&family=Noto+Sans+Arabic:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/zill.css?v=8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23061D22'/%3E%3Cpath d='M10 38 Q32 8 54 38' fill='none' stroke='%2386E0D0' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='46' r='6' fill='%2300E4FF'/%3E%3C/svg%3E">
 </head>
 <body data-mode="intro" data-layout="all">
@@ -27,11 +27,11 @@
 <header class="top">
   <button class="brand" data-act="mode" data-v="intro" aria-label="ZILL home"><span class="logo-mark" aria-hidden="true"></span><span class="wm">ZILL</span> <span class="ar" lang="ar" dir="rtl">&#x638;&#x644;</span></button>
   <nav class="nav" aria-label="Sections">
-    <button data-act="mode" data-v="intro">Overview</button>
-    <button data-act="mode" data-v="tour">Guided tour</button>
-    <button data-act="mode" data-v="ops">Live demo</button>
-    <button data-act="mode" data-v="lab">Scenario Lab <span class="badge">7</span></button>
-    <button data-act="mode" data-v="evidence">Evidence</button>
+    <button data-act="mode" data-v="intro" data-i18n="nav.intro">Overview</button>
+    <button data-act="mode" data-v="tour" data-i18n="nav.tour">Guided tour</button>
+    <button data-act="mode" data-v="ops" data-i18n="nav.ops">Live demo</button>
+    <button data-act="mode" data-v="lab" data-i18n="nav.lab">Scenario Lab <span class="badge">7</span></button>
+    <button data-act="mode" data-v="evidence" data-i18n="nav.evidence">Evidence</button>
   </nav>
   <details class="presenter" id="presenter">
     <summary title="Simulated clock, offline test and reset (for presenters)">&#9881; Presenter</summary>
@@ -47,35 +47,36 @@
       <p class="phelp">Run the clock to see the timers: 3-minute answer window, no-shows after ETA + 15 min, and data going stale after 20 min.</p>
     </div>
   </details>
-  <span class="synpill" title="All stations, routes, groups and times are fictional">Synthetic data &middot; prototype</span>
+  <button id="langBtn" class="tbtn langbtn" data-act="lang" lang="ar" title="Arabic / English">&#x627;&#x644;&#x639;&#x631;&#x628;&#x64A;&#x629;</button>
+  <span class="synpill" title="All stations, routes, groups and times are fictional" data-i18n="pill">Synthetic data &middot; prototype</span>
 </header>
 <!-- ============ OVERVIEW ============ -->
 <section id="intro" class="intro" aria-labelledby="introTitle">
   <div class="hero" role="img" aria-label="Illustrative artwork of shaded rest stations along a lit path. Not a real site."></div>
   <div class="intro-in">
-    <div class="eyebrow">MEDATHON 2026 &middot; Track 1: Healthcare Crowd &amp; Patient Flow Management</div>
+    <div class="eyebrow" data-i18n="intro.eyebrow">MEDATHON 2026 &middot; Track 1: Healthcare Crowd &amp; Patient Flow Management</div>
     <h1 id="introTitle"><span class="wm">ZILL</span> <span class="ar" lang="ar" dir="rtl">&#x638;&#x644;</span><small>shade</small></h1>
-    <p class="q">Which appropriate station can receive this group, <em>and has the receiving team confirmed?</em></p>
-    <p class="lede">A narrow coordination add-on for authorised Hajj field teams. It sends a group that needs rest to a cooling or assistance station that has room for the <b>whole group</b>, suits its <b>access needs</b>, is on an <b>operator-approved route</b>, and has <b>confirmed</b> it will receive them.</p>
+    <p class="q" data-i18n="intro.q">Which appropriate station can receive this group, <em>and has the receiving team confirmed?</em></p>
+    <p class="lede" data-i18n="intro.lede">A narrow coordination add-on for authorised Hajj field teams. It sends a group that needs rest to a cooling or assistance station that has room for the <b>whole group</b>, suits its <b>access needs</b>, is on an <b>operator-approved route</b>, and has <b>confirmed</b> it will receive them.</p>
     <div class="cta">
-      <button class="btn big" data-act="mode" data-v="tour">&#9654; Watch the 60-second demo</button>
-      <button class="btn big ghost" data-act="mode" data-v="ops">Open the full live demo</button>
-      <button class="btn big ghost" data-act="mode" data-v="lab">Replay the 7 test scenarios</button>
-      <button class="btn big ghost" data-act="mode" data-v="evidence">What is tested, what is not</button>
+      <button class="btn big" data-act="mode" data-v="tour" data-i18n="cta.tour">&#9654; Watch the 60-second demo</button>
+      <button class="btn big ghost" data-act="mode" data-v="ops" data-i18n="cta.ops">Open the full live demo</button>
+      <button class="btn big ghost" data-act="mode" data-v="lab" data-i18n="cta.lab">Replay the 7 test scenarios</button>
+      <button class="btn big ghost" data-act="mode" data-v="evidence" data-i18n="cta.ev">What is tested, what is not</button>
     </div>
     <div class="roles">
-      <div class="role"><span class="ri">&#128241;</span><b>Group coordinator</b><span>Phone. Enters an anonymous group size, approximate location and access needs. Sees only stations that fit the whole group, with walking distance and data age.</span></div>
-      <div class="role"><span class="ri">&#128203;</span><b>Station staff</b><span>Tablet. Open, pause or close. Tap people in and out, log walk-ins. Accept, decline or &ldquo;call me&rdquo; for each request.</span></div>
-      <div class="role"><span class="ri">&#128421;</span><b>Supervisor</b><span>Desktop. All stations in one view: space, incoming groups, stale data, overrides with recorded reasons.</span></div>
+      <div class="role"><span class="ri">&#128241;</span><b data-i18n="r1b">Group coordinator</b><span data-i18n="r1s">Phone. Enters an anonymous group size, approximate location and access needs. Sees only stations that fit the whole group, with walking distance and data age.</span></div>
+      <div class="role"><span class="ri">&#128203;</span><b data-i18n="r2b">Station staff</b><span data-i18n="r2s">Tablet. Open, pause or close. Tap people in and out, log walk-ins. Accept, decline or &ldquo;call me&rdquo; for each request.</span></div>
+      <div class="role"><span class="ri">&#128421;</span><b data-i18n="r3b">Supervisor</b><span data-i18n="r3s">Desktop. All stations in one view: space, incoming groups, stale data, overrides with recorded reasons.</span></div>
     </div>
     <div class="facts">
-      <div><b>5</b><span>fixed rules, applied in order, no AI</span></div>
-      <div><b>7/7</b><span>scripted scenarios pass in Python and in this browser port</span></div>
-      <div><b>0</b><span>names, medical histories or location tracks collected</span></div>
-      <div><b>1</b><span>live state shared by all three screens</span></div>
+      <div><b>5</b><span data-i18n="f1">fixed rules, applied in order, no AI</span></div>
+      <div><b>7/7</b><span data-i18n="f2">scripted scenarios pass in Python and in this browser port</span></div>
+      <div><b>0</b><span data-i18n="f3">names, medical histories or location tracks collected</span></div>
+      <div><b>1</b><span data-i18n="f4">live state shared by all three screens</span></div>
     </div>
-    <div class="team"><b>Team ZILL</b> &middot; Batterjee Medical College, Jeddah &middot; Hasan Ali Ahmed Haneef (Group Leader) &middot; Mohammed Hazem Sabir Muqadam &middot; Bilal Abdul Qayyum &middot; Yahiya Khan</div>
-    <p class="disc">Prototype. All stations, routes, groups and times are synthetic. The area is schematic and fictional, not a real Hajj map. No partnership with, or integration into, any authority or existing system is implied. Cover artwork is illustrative.</p>
+    <div class="team" data-i18n="intro.team"><b>Team ZILL</b> &middot; Batterjee Medical College, Jeddah &middot; Hasan Ali Ahmed Haneef (Group Leader) &middot; Mohammed Hazem Sabir Muqadam &middot; Bilal Abdul Qayyum &middot; Yahiya Khan</div>
+    <p class="disc" data-i18n="intro.disc">Prototype. All stations, routes, groups and times are synthetic. The area is schematic and fictional, not a real Hajj map. No partnership with, or integration into, any authority or existing system is implied. Cover artwork is illustrative.</p>
   </div>
 </section>
 
@@ -203,6 +204,7 @@
 
 <script src="js/engine.js?v=3"></script>
 <script src="js/scenarios.js?v=3"></script>
-<script src="js/app.js?v=7"></script>
+<script src="js/i18n.js?v=1"></script>
+<script src="js/app.js?v=9"></script>
 </body>
 </html>

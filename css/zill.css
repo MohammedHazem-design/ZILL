@@ -527,3 +527,30 @@ body[data-tour-end] .tourend{display:block;max-width:920px;margin:0 auto}
 /* phones: incoming requests first on the station tablet */
 @media (max-width:760px){.tgrid .tcol.wide{order:-1}}
 
+
+/* ---------- friendlier map ---------- */
+.road{stroke:#0d2a30;stroke-width:22;stroke-linecap:round;fill:none}
+.map.mini .road{stroke-width:26}
+.e-route-glow.draw{opacity:.5;stroke-dasharray:1800;stroke-dashoffset:1800;animation:drawin 1s cubic-bezier(.3,.7,.3,1) forwards}
+@keyframes drawin{to{stroke-dashoffset:0;opacity:.18}}
+
+/* ---------- polish: confirmation pop and "press me next" pulse ---------- */
+.rq.justok{animation:okpop .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes okpop{0%{transform:scale(.94);box-shadow:0 0 0 0 rgba(95,211,180,.75)}55%{transform:scale(1.025)}100%{transform:scale(1);box-shadow:0 0 0 14px rgba(95,211,180,0)}}
+.cta-pulse{animation:ctapulse 2.4s ease-in-out infinite}
+@keyframes ctapulse{0%,100%{box-shadow:0 0 0 0 rgba(28,110,115,0)}50%{box-shadow:0 0 0 7px rgba(28,110,115,.25)}}
+.btn.main.cta-pulse{animation-name:ctapulse2}
+@keyframes ctapulse2{0%,100%{box-shadow:0 0 0 0 rgba(28,110,115,0)}50%{box-shadow:0 0 0 8px rgba(28,110,115,.28)}}
+
+/* ---------- Arabic ---------- */
+.langbtn{font-family:"Noto Kufi Arabic","Segoe UI",Tahoma,sans-serif;font-weight:700}
+body.lang-ar .intro-in,body.lang-ar .nav,body.lang-ar #tourCard,body.lang-ar #tourEnd{font-family:"Noto Sans Arabic","Noto Kufi Arabic","Segoe UI",Tahoma,sans-serif}
+body.lang-ar .intro-in .eyebrow,body.lang-ar .tourcard .tk,body.lang-ar .nav button{letter-spacing:0;text-transform:none}
+body.lang-ar .intro h1{direction:ltr;justify-content:flex-end}
+body.lang-ar .intro-in{margin-left:auto}
+body.lang-ar .hero:after{background:linear-gradient(270deg,var(--mid) 0%,rgba(6,29,34,.94) 38%,rgba(6,29,34,.55) 62%,rgba(6,29,34,.15) 100%),linear-gradient(0deg,var(--mid) 0%,transparent 30%)}
+body.lang-ar .hero{background-position:left center}
+body.lang-ar .facts div{border-left:0;border-right:3px solid var(--cyan)}
+body.lang-ar .tourcard p,body.lang-ar .lede,body.lang-ar .role span:last-child{line-height:1.85}
+body.lang-ar .tourcard h2,body.lang-ar .q{line-height:1.5}
+body.lang-ar .telist li i{font-size:13px}
