@@ -1,0 +1,66 @@
+{
+ "assumptions": {
+  "stations(dist_m,capacity)": {
+   "S1": [
+    150,
+    60
+   ],
+   "S2": [
+    500,
+    80
+   ],
+   "S3": [
+    700,
+    50
+   ],
+   "S4": [
+    300,
+    100
+   ],
+   "S5": [
+    800,
+    70
+   ]
+  },
+  "speed_m_min": 50,
+  "horizon_min": 180,
+  "mean_gap_min": 3.5,
+  "group_size": [
+   8,
+   40
+  ],
+  "stay_min": [
+   20,
+   40
+  ],
+  "report_every_min": 15,
+  "runs": 300
+ },
+ "results": {
+  "A: nearest station, no capacity info": {
+   "turned_away_per_100": 136.8,
+   "mean_extra_walk_m": 218.1,
+   "unplaced_per_100": 0.0
+  },
+  "B: last capacity report every 15 min": {
+   "turned_away_per_100": 101.2,
+   "mean_extra_walk_m": 330.6,
+   "unplaced_per_100": 0.0
+  },
+  "ZILL rules: live updates + confirmed holds": {
+   "turned_away_per_100": 0.0,
+   "mean_extra_walk_m": 223.8,
+   "unplaced_per_100": 13.8
+  },
+  "ZILL sensitivity: 30% walk-ins, logged 10 min late": {
+   "turned_away_per_100": 59.6,
+   "mean_extra_walk_m": 249.1,
+   "unplaced_per_100": 6.7
+  },
+  "ZILL sensitivity: 60% walk-ins, logged 10 min late": {
+   "turned_away_per_100": 112.4,
+   "mean_extra_walk_m": 255.0,
+   "unplaced_per_100": 1.5
+  }
+ }
+}

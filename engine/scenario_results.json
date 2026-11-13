@@ -1,0 +1,37 @@
+[
+ {
+  "scenario": "1 Ordinary request",
+  "pass": true,
+  "detail": "options=['S2', 'S3', 'S5'], top=S2, excluded=[('S1', 'space 2 < group 25 (not split)'), ('S4', 'info 35 min old \u2014 confirm by radio')]"
+ },
+ {
+  "scenario": "2 Nearest station full",
+  "pass": true,
+  "detail": "S1 excluded: [('S1', 'space 2 < group 25 (not split)')]"
+ },
+ {
+  "scenario": "3 Two groups, same space",
+  "pass": true,
+  "detail": "first=R1, second=None; second group now offered ['S5']"
+ },
+ {
+  "scenario": "4 Accessible route",
+  "pass": true,
+  "detail": "options=['S3', 'S5'], S2 reason=['no approved step-free route']"
+ },
+ {
+  "scenario": "5 Station closes",
+  "pass": true,
+  "detail": "request state=station-closed, new options=['S3', 'S5']"
+ },
+ {
+  "scenario": "6 Stale info -> manual",
+  "pass": true,
+  "detail": "manual=True, reasons=[('S1', 'info 30 min old \u2014 confirm by radio'), ('S2', 'info 30 min old \u2014 confirm by radio'), ('S3', 'info 30 min old \u2014 confirm by radio'), ('S4', 'info 35 min old \u2014 confirm by radio'), ('S5', 'info 30 min old \u2014 confirm by radio')]"
+ },
+ {
+  "scenario": "Extra: expiry, no-show, override reason",
+  "pass": true,
+  "detail": "lapsed=True, no-show released=True, override needs reason=True"
+ }
+]

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZILL Prototype</title>
+<meta name="description" content="ZILL: rules-based coordination prototype that sends a group needing rest to a station that has room, suits its access needs, is on an approved route and has confirmed. Synthetic data only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/zill.css?v=5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23061D22'/%3E%3Cpath d='M10 38 Q32 8 54 38' fill='none' stroke='%2386E0D0' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='46' r='6' fill='%2300E4FF'/%3E%3C/svg%3E">
+</head>
+<body data-mode="intro" data-layout="all">
+<a class="skip" href="#stage">Skip to the live screens</a>
+
+<header class="top">
+  <button class="brand" data-act="mode" data-v="intro" aria-label="ZILL home"><span class="logo-mark" aria-hidden="true"></span><span class="wm">ZILL</span> <span class="ar" lang="ar" dir="rtl">&#x638;&#x644;</span></button>
+  <nav class="nav" aria-label="Sections">
+    <button data-act="mode" data-v="intro">Overview</button>
+    <button data-act="mode" data-v="ops">Live demo</button>
+    <button data-act="mode" data-v="lab">Scenario Lab <span class="badge">7</span></button>
+    <button data-act="mode" data-v="evidence">Evidence</button>
+  </nav>
+  <div class="clockbox" title="Simulated clock. Nothing here is real time.">
+    <button id="clockBtn" class="ic" data-act="clock" aria-label="Run simulated clock">&#9654;</button>
+    <div class="ctime"><span id="clock">14:05</span><small>simulated</small></div>
+    <select id="speed" aria-label="Clock speed"><option value="10">10&times;</option><option value="30" selected>30&times;</option><option value="60">60&times;</option><option value="120">120&times;</option></select>
+    <button class="ic sm" data-act="step" data-d="1" title="Advance 1 simulated minute">+1m</button>
+    <button class="ic sm" data-act="step" data-d="5" title="Advance 5 simulated minutes">+5m</button>
+  </div>
+  <div class="tools">
+    <button id="offBtn" class="tbtn" data-act="offline" aria-pressed="false" title="Simulate the coordinator phone losing connection">Phone offline</button>
+    <button class="tbtn" data-act="reset" title="Reload the synthetic demo area">Reset</button>
+    <span class="synpill" title="All stations, routes, groups and times are fictional">Synthetic data &middot; prototype</span>
+  </div>
+</header>
+
+<!-- ============ OVERVIEW ============ -->
+<section id="intro" class="intro" aria-labelledby="introTitle">
+  <div class="hero" role="img" aria-label="Illustrative artwork of shaded rest stations along a lit path. Not a real site."></div>
+  <div class="intro-in">
+    <div class="eyebrow">MEDATHON 2026 &middot; Track 1: Healthcare Crowd &amp; Patient Flow Management</div>
+    <h1 id="introTitle"><span class="wm">ZILL</span> <span class="ar" lang="ar" dir="rtl">&#x638;&#x644;</span><small>shade</small></h1>
+    <p class="q">Which appropriate station can receive this group, <em>and has the receiving team confirmed?</em></p>
+    <p class="lede">A narrow coordination add-on for authorised Hajj field teams. It sends a group that needs rest to a cooling or assistance station that has room for the <b>whole group</b>, suits its <b>access needs</b>, is on an <b>operator-approved route</b>, and has <b>confirmed</b> it will receive them.</p>
+    <div class="cta">
+      <button class="btn big" data-act="mode" data-v="ops">&#9654; Open the live demo</button>
+      <button class="btn big ghost" data-act="mode" data-v="lab">Replay the 7 test scenarios</button>
+      <button class="btn big ghost" data-act="mode" data-v="evidence">What is tested, what is not</button>
+    </div>
+    <div class="roles">
+      <div class="role"><span class="ri">&#128241;</span><b>Group coordinator</b><span>Phone. Enters an anonymous group size, approximate location and access needs. Sees only stations that fit the whole group, with walking distance and data age.</span></div>
+      <div class="role"><span class="ri">&#128203;</span><b>Station staff</b><span>Tablet. Open, pause or close. Tap people in and out, log walk-ins. Accept, decline or &ldquo;call me&rdquo; for each request.</span></div>
+      <div class="role"><span class="ri">&#128421;</span><b>Supervisor</b><span>Desktop. All stations in one view: space, incoming groups, stale data, overrides with recorded reasons.</span></div>
+    </div>
+    <div class="facts">
+      <div><b>5</b><span>fixed rules, applied in order, no AI</span></div>
+      <div><b>7/7</b><span>scripted scenarios pass in Python and in this browser port</span></div>
+      <div><b>0</b><span>names, medical histories or location tracks collected</span></div>
+      <div><b>1</b><span>live state shared by all three screens</span></div>
+    </div>
+    <div class="team"><b>Team ZILL</b> &middot; Batterjee Medical College, Jeddah &middot; Hasan Ali Ahmed Haneef (Group Leader) &middot; Mohammed Hazem Sabir Muqadam &middot; Bilal Abdul Qayyum &middot; Yahiya Khan</div>
+    <p class="disc">Prototype. All stations, routes, groups and times are synthetic. The area is schematic and fictional, not a real Hajj map. No partnership with, or integration into, any authority or existing system is implied. Cover artwork is illustrative.</p>
+  </div>
+</section>
+
+<!-- ============ LIVE STAGE (Live demo + Scenario Lab) ============ -->
+<div class="opsbar">
+  <div class="lay" role="group" aria-label="Which screens to show">
+    <span class="lbl">Show</span>
+    <button data-act="layout" data-v="all">All three, live</button>
+    <button data-act="layout" data-v="coord">Coordinator</button>
+    <button data-act="layout" data-v="station">Station</button>
+    <button data-act="layout" data-v="super">Supervisor</button>
+  </div>
+  <p class="hint">One shared state: act on any screen and the others update at once. Try: send a request on the phone, accept it on the tablet, watch the group walk on the map.</p>
+</div>
+
+<main id="stage" class="stage">
+  <aside id="lab" class="lab" aria-label="Scenario Lab"></aside>
+  <div class="devices">
+    <section class="dev phone-wrap" data-role="coord" aria-label="Coordinator phone">
+      <div class="devcap"><span><b>Coordinator</b> &middot; phone</span><button class="lnk" data-act="open" data-v="coord" title="Open this screen in its own window; it stays in sync">Open on another screen &#8599;</button></div>
+      <div class="phone"><div id="coord" class="screen light"></div></div>
+    </section>
+    <section class="dev tablet-wrap" data-role="station" aria-label="Station staff tablet">
+      <div class="devcap"><span><b>Station staff</b> &middot; tablet</span><button class="lnk" data-act="open" data-v="station">Open on another screen &#8599;</button></div>
+      <div class="tablet"><div id="station" class="screen light"></div></div>
+    </section>
+    <section class="dev map-wrap" data-role="map" aria-label="Shared area map">
+      <div class="devcap"><span><b>Area map</b> &middot; schematic, fictional, not a real Hajj map</span><button class="lnk" data-act="open" data-v="map">Open on another screen &#8599;</button></div>
+      <div class="mapcard"><div id="mapLive"></div>
+        <div class="maplegend"><span><i class="lg ok"></i>approved route</span><span><i class="lg stairs"></i>stairs, not step-free</span><span><i class="lg closed"></i>closed</span><span><i class="lg route"></i>suggested route</span><span><i class="lg pend"></i>awaiting answer</span><span><i class="dot"></i>group on the way</span></div>
+      </div>
+    </section>
+    <section class="dev desk-wrap" data-role="super" aria-label="Supervisor desktop">
+      <div class="devcap"><span><b>Supervisor</b> &middot; desktop</span><button class="lnk" data-act="open" data-v="super">Open on another screen &#8599;</button></div>
+      <div class="desk">
+        <div class="chrome"><i></i><i></i><i></i><span>zill &middot; area overview &middot; prototype (synthetic data)</span></div>
+        <div id="super" class="screen light deskscreen">
+          <div class="dhead"><b>Area overview &middot; 5 stations</b><span class="tag">Supervisor</span></div>
+          <div class="dbody">
+            <div id="superLive"></div>
+            <div class="card ovform">
+              <div class="h0">Record an override <span class="mute">(a reason is required)</span></div>
+              <div class="ovgrid">
+                <label>Action<select id="ovAction">
+                  <option value="radio">Confirm a station's count by radio</option>
+                  <option value="route-close">Close a route segment</option>
+                  <option value="route-open">Reopen a route segment</option>
+                  <option value="note">Manual dispatch / other decision</option>
+                </select></label>
+                <label>Target<select id="ovTarget"></select></label>
+                <label id="ovNoteRow" style="display:none">What was decided<input id="ovNote" type="text" maxlength="120" placeholder="e.g. Sent G-07 to S3 despite longer walk"></label>
+                <label class="wide">Reason (recorded in the log)<input id="ovReason" type="text" maxlength="160" placeholder="e.g. elderly member, stay near exit" autocomplete="off"></label>
+              </div>
+              <div class="ovrow"><span id="ovHint" class="mute">A recorded reason is required before any override.</span><button id="ovSubmit" class="btn" data-act="ov-submit" disabled>Record override</button></div>
+            </div>
+          </div>
+          <div class="synth">Prototype &middot; synthetic data</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<div id="caption" class="caption" aria-live="polite"></div>
+
+<!-- ============ EVIDENCE ============ -->
+<section id="evidence" class="evidence" aria-labelledby="evTitle">
+  <div class="ev-in">
+    <div class="eyebrow">For the judges</div>
+    <h2 id="evTitle">What has actually been built and tested, and what has not</h2>
+    <p class="lede">Every claim below is tagged. <span class="tagk t">Tested</span> means we ran it and it passed. <span class="tagk i">Illustrative</span> means a synthetic simulation, not evidence of real-world benefit. <span class="tagk p">Proposed</span> means a design choice still to be validated. <span class="tagk n">Not yet tested</span> means exactly that.</p>
+
+    <div class="evgrid">
+      <article class="evc"><span class="tagk t">Tested</span><h3>Rules engine, two implementations</h3><p>The allocation rules are in Python (<code>engine/zill_engine.py</code>), and this browser app runs a line-for-line JavaScript port. The 7 scripted scenarios pass in both, and the browser reproduces the Python output <b>character for character</b>.</p><button class="btn" data-act="mode" data-v="lab">Run the 7 tests yourself &rarr;</button></article>
+      <article class="evc"><span class="tagk t">Built</span><h3>Three role screens, one live state</h3><p>Coordinator phone, station tablet and supervisor desktop run on one shared state. Each screen can be opened in its own window and stays in sync. Works offline from a single folder, with no server, account or tracking.</p><button class="btn alt" data-act="mode" data-v="ops">Open the live demo &rarr;</button></article>
+      <article class="evc"><span class="tagk i">Illustrative</span><h3>Baseline comparison on synthetic demand</h3><p>300 simulated runs of 3 hours of synthetic group demand (<code>engine/simulate.py</code>). Useful for spotting failure modes, not for claiming benefit.</p></article>
+      <article class="evc"><span class="tagk n">Not yet tested</span><h3>Real people, real places</h3><p>No interviews, operator partner, pilot site or real data exist yet. The time limits (3, 15 and 20 min) are starting assumptions, not validated values.</p></article>
+    </div>
+
+    <h3 class="sec">Illustrative simulation <span class="tagk i">Illustrative</span></h3>
+    <div class="finding"><b>Key finding: the benefit depends on staff logging walk-ins.</b> With live counts and confirmed holds, no simulated group walked to a full station. When 60% of arrivals are walk-ins logged 10 minutes late, groups turned away rise to 112.4 per 100, worse than a 15-minute radio report (101.2). The live count is the product; the station tablet must make logging easy.</div>
+    <div id="simCharts" class="charts"></div>
+    <p class="mute small">Source: <code>engine/simulation_results.json</code>. Assumptions: 5 stations on one line, 50 m/min group pace, group sizes 8&ndash;40, stays 20&ndash;40 min, mean gap 3.5 min between requests, 300 runs. Synthetic demand only.</p>
+
+    <h3 class="sec">Rules, not AI <span class="tagk t">Tested</span></h3>
+    <ol class="pipeline">
+      <li><b>1</b><span>Route approved and open; step-free if the group needs it</span></li>
+      <li><b>2</b><span>Station open; data no older than 20 minutes</span></li>
+      <li><b>3</b><span>Station offers the services needed</span></li>
+      <li><b>4</b><span>Whole group fits: capacity &minus; inside &minus; accepted &minus; pending &ge; group size. Never split.</span></li>
+      <li><b>5</b><span>Rank by walking distance, then data freshness</span></li>
+    </ol>
+    <p class="mute">Every suggestion on the coordinator phone has a &ldquo;Why this station?&rdquo; checklist, and every station that is not offered shows its reason. Nothing is a black box.</p>
+
+    <h3 class="sec">Hard boundaries, and where this prototype enforces them</h3>
+    <table class="btable">
+      <tr><th>Boundary</th><th>How the prototype enforces it</th></tr>
+      <tr><td>Not triage or diagnosis</td><td>The emergency instruction is the first thing on the coordinator screen, above every other control.</td></tr>
+      <tr><td>Never suggest a closed, prohibited or unverified route</td><td>Routing uses approved segments only (Scenario 4). Supervisors can close or reopen a segment only with a recorded reason.</td></tr>
+      <tr><td>Never split a group</td><td>Rule 4 excludes any station without room for the whole group, and says so (Scenario 2).</td></tr>
+      <tr><td>Always show data age; never call stale data live</td><td>Every option shows &ldquo;Live / Ageing / Not live&rdquo; as text plus minutes. Data older than 20 min is never offered (Scenario 6). Offline mode freezes the list and labels it not live.</td></tr>
+      <tr><td>No names, medical histories or location tracking</td><td>Inputs are an anonymous count, one of three approximate points and access needs. Nothing else is collected or stored.</td></tr>
+      <tr><td>Acceptance is not a guaranteed admission</td><td>Stated on the confirmation card and beside the request button.</td></tr>
+      <tr><td>Overrides need a recorded reason</td><td>The engine refuses an override without one (Scenario 7); the form stays disabled until a reason is typed.</td></tr>
+      <tr><td>Synthetic data, clearly labelled</td><td>&ldquo;Synthetic data &middot; prototype&rdquo; on every screen; maps labelled schematic, fictional, not a real Hajj map.</td></tr>
+    </table>
+
+    <div class="evgrid two">
+      <article class="evc"><span class="tagk p">Proposed</span><h3>Where ZILL would fit</h3><p>Existing systems, such as Nusuk and the Ministry of Hajj and Umrah's Monitoring and Control Center, already do a great deal. ZILL is a narrow add-on for one hand-off: from a field team with a tired group to a station team that has confirmed. It replaces nothing, and no integration or partnership exists or is implied.</p></article>
+      <article class="evc"><span class="tagk n">Next to test</span><h3>What would change our mind</h3><ul><li>Can station staff keep counts current at peak load? (The simulation says everything depends on it.)</li><li>Are 3 / 15 / 20 minutes the right limits?</li><li>Do coordinators trust the &ldquo;why&rdquo; explanations enough to act on them?</li><li>Arabic-first interface and field connectivity.</li></ul></article>
+    </div>
+
+    <h3 class="sec">Data and tools used</h3>
+    <ul class="tools-list">
+      <li><b>Data</b>Fully synthetic demo area (5 stations, 8 route segments, 1 assembly point) defined in the engine. No real, personal or patient data.</li>
+      <li><b>Rules engine</b>Python 3 standard library (dataclasses, heapq); shortest path over approved segments.</li>
+      <li><b>Prototype</b>Plain HTML, CSS, SVG and JavaScript; JavaScript port of the engine; BroadcastChannel for live state across windows. No server, framework, analytics or AI service.</li>
+      <li><b>Tests</b>7 scripted scenarios (<code>run_scenarios.py</code>), replayed and checked in the browser against the saved Python output.</li>
+    </ul>
+    <p class="disc dark">Prototype by Team ZILL for MEDATHON 2026. All data synthetic. We do not claim ZILL reduces heat illness or saves lives; that would need a real, approved pilot.</p>
+  </div>
+</section>
+
+<div id="modal" class="modal"></div>
+
+<script src="js/engine.js?v=3"></script>
+<script src="js/scenarios.js?v=3"></script>
+<script src="js/app.js?v=5"></script>
+</body>
+</html>
