@@ -554,7 +554,7 @@
       const nm = (s, i) => (ar ? T.scen[i] : [s.title, s.rule]);
       end.innerHTML = '<div class="tebig">' + (ar ? T.big.replace("{p}", pass).replace("{s}", same) : "<b>" + pass + "/7</b> scenarios pass<span>&middot;</span><b>" + same + "/7</b> identical to the Python engine") + "</div>" +
         '<ol class="telist">' + SC.SCENARIOS.map((s, i) => "<li><span>" + s.n + "</span><b>" + nm(s, i)[0] + "</b><i>" + nm(s, i)[1] + '</i><em class="' + (r[i].pass ? "ok" : "bad") + '">' + (r[i].pass ? (ar ? T.pass : "PASS") : (ar ? T.fail : "FAIL")) + "</em></li>").join("") + "</ol>" +
-        '<div class="tecta"><button class="btn" data-act="tour-explore">' + (ar ? T.cta[0] : "Explore the full live demo") + '</button><button class="btn alt" data-act="mode" data-v="lab">' + (ar ? T.cta[1] : "Replay the 7 scenarios") + '</button><button class="btn alt" data-act="mode" data-v="evidence">' + (ar ? T.cta[2] : "What is tested, what is not") + "</button></div>";
+        '<div class="tecta"><button class="btn" data-act="tour-explore">' + (ar ? T.cta[0] : "Explore the full live demo") + '</button><button class="btn alt" data-act="mode" data-v="lab">' + (ar ? T.cta[1] : "Replay the 7 scenarios") + '</button><button class="btn alt" data-act="mode" data-v="evidence">' + (ar ? T.cta[2] : "What is tested, what is not") + "</button></div>" + (document.querySelector(".reslinks") ? '<div class="reslinks">' + document.querySelector(".reslinks").innerHTML + "</div>" : "");
       end.dataset.done = 1;
     }
   }

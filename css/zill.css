@@ -554,3 +554,11 @@ body.lang-ar .facts div{border-left:0;border-right:3px solid var(--cyan)}
 body.lang-ar .tourcard p,body.lang-ar .lede,body.lang-ar .role span:last-child{line-height:1.85}
 body.lang-ar .tourcard h2,body.lang-ar .q{line-height:1.5}
 body.lang-ar .telist li i{font-size:13px}
+
+/* ---------- resource links (one shareable link reaches everything) ---------- */
+.reslinks{display:flex;flex-wrap:wrap;gap:10px;margin:-14px 0 26px}
+.reslinks a{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;background:rgba(8,38,44,.8);border:1px solid var(--line-d);color:var(--ivory);text-decoration:none;font-size:14.5px;backdrop-filter:blur(6px)}
+.reslinks a:hover{border-color:var(--mint);color:#fff}
+.reslinks a b{font-weight:700}
+.tourend .reslinks{margin:6px 0 10px;justify-content:center}
+@media (max-width:760px){.reslinks{margin:-10px 0 20px}.reslinks a{flex:1 1 100%}}
