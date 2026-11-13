@@ -5,7 +5,7 @@ Team ZILL · MEDATHON (SYHF 2026) Filter 2 · Team code MED-VSPPAX · Track 1: H
 
 > **Status: working prototype on synthetic data.** The web app and its rules engine run, and 7 scripted test scenarios pass. There are **no real users, operator partner, pilot site or real data yet**. All stations, routes, groups and times are synthetic; the map is schematic and fictional, not a real Hajj map.
 
-**▶ Live prototype:** `LIVE_LINK_HERE` · **Filter 2 deck:** [`submission/MED-VSPPAX_TeamZILL_Filter2.pdf`](submission/MED-VSPPAX_TeamZILL_Filter2.pdf)
+**▶ Live prototype:** **https://mohammedhazem-design.github.io/ZILL/** · **Filter 2 deck:** [`submission/MED-VSPPAX_TeamZILL_Filter2.pdf`](submission/MED-VSPPAX_TeamZILL_Filter2.pdf)
 
 ## The problem
 
